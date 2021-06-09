@@ -3,11 +3,11 @@ import urllib
 import json
 
 from messages import hello, welcome, sorry
-
-GIPHY_URL = "https://api.giphy.com/v1/gifs/translate?api_key={0}&s={1}"
+from startup import get_bot, get_giphy_key
 
 def get_gif_url(text):
-    url = GIPHY_URL.format(GIPHY_API_KEY, urllib.parse.quote(text))
+    GIPHY_URL = "https://api.giphy.com/v1/gifs/translate?api_key={0}&s={1}"
+    url = GIPHY_URL.format(get_giphy_key(), urllib.parse.quote(text))
     print(url)
     resp = requests.get(url)
     json_resp = json.loads(resp.content)
@@ -16,10 +16,12 @@ def get_gif_url(text):
     return gif_url
 
 def handle_ise(chat_id, msg_id):
+    BOT = get_bot()
     BOT.sendMessage(chat_id=chat_id, text=sorry, reply_to_message_id=msg_id)
     BOT.sendAnimation(chat_id=chat_id, animation=get_gif_url("sorry"))
 
 def respond(update):
+    BOT = get_bot()
     chat_id = update.message.chat.id
     msg_id = update.message.message_id
     text = update.message.text.encode('utf-8').decode()
