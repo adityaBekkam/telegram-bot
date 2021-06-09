@@ -9,6 +9,15 @@ from startup import get_bot, get_giphy_key
 logger = logging.getLogger(__name__)
 
 def get_gif_url(text):
+    """
+    Args:
+        text (str): Text message sent by the user
+
+    Returns:
+        (str) URL corresponding to the user text received
+
+    Raises: None
+    """
     GIPHY_URL = "https://api.giphy.com/v1/gifs/translate?api_key={0}&s={1}"
     url = GIPHY_URL.format(get_giphy_key(), urllib.parse.quote(text))
     logger.debug(url)
@@ -19,11 +28,26 @@ def get_gif_url(text):
     return gif_url
 
 def handle_ise(chat_id, msg_id):
+    """
+    Args:
+        chat_id (int/str): ID of chat with the current user
+        msg_id (int/str): ID of the user message in current context
+
+    Returns: None
+    Raises: None
+    """
     BOT = get_bot()
     BOT.sendMessage(chat_id=chat_id, text=sorry, reply_to_message_id=msg_id)
     BOT.sendAnimation(chat_id=chat_id, animation=get_gif_url("sorry"))
 
 def respond(update):
+    """
+    Args:
+        update (<telegram.Update>): Object containing message details
+
+    Returns: 'ok' or None
+    Raises: None
+    """
     BOT = get_bot()
     chat_id = update.message.chat.id
     msg_id = update.message.message_id

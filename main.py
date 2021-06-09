@@ -13,6 +13,13 @@ logger = logging.getLogger(__name__)
 
 initialise()
 def handle_request(request):
+    """
+    Args:
+        request (Flask.request): Flask request object
+
+    Returns: 'ok' or None
+    Raises: None
+    """
     initialise()
     BOT = get_bot()
     update = telegram.Update.de_json(request.get_json(force=True), BOT)
@@ -26,4 +33,6 @@ def handle_request(request):
 # if __name__ == "__main__":
 #     from bot import get_gif_url
 #     BOT = get_bot()
-#     BOT.sendAnimation(chat_id=1055163296, animation=get_gif_url("sorry"))
+#     msg = "sleeping baby"
+#     BOT.sendAnimation(chat_id=chat_id, animation=get_gif_url(msg))
+#     BOT.sendMessage(chat_id=chat_id, text="Good night kiddoo")

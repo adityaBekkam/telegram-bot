@@ -17,6 +17,13 @@ GIPHY_API_KEY = None  # Specific to my bot
 # ------------------- #
 
 def initialise():
+    """
+    Args: None
+    Returns: None
+    Raises:
+        sys.exit when mandatory arguments are not provided
+        to the program
+    """
     global BOT
     global TOKEN
     global WEBHOOK_URL
@@ -51,9 +58,23 @@ def initialise():
         sys.exit()
 
 def get_bot():
+    """
+    Args: None
+    Returns:
+        BOT object (<telegram.Bot>)
+
+    Raises: None
+    """
     global BOT
     return BOT
 
 def get_giphy_key():
+    """
+    Args:
+    Returns:
+        Value of API Key (str)
+
+    Raises: None
+    """
     global GIPHY_API_KEY
     return GIPHY_API_KEY
