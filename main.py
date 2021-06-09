@@ -15,6 +15,18 @@ WEBHOOK_URL = None    # Optional if registration is already done
 GIPHY_API_KEY = None  # Specific to my bot
 # ---------------------------- #
 
+# -- Static messages -- #
+hello = "Hello {0}, how you doing"
+welcome = """
+
+Welcome to Bekkam's bot. Type a word & get some nice gifs.
+
+Oh btw, kids get kiddo gifs :p
+"""
+sorry = "There was a problem with this message, please send a different one or try again"
+# ---------------------------- #
+
+
 def initialise():
     global BOT
     global TOKEN
@@ -56,28 +68,35 @@ def get_gif_url(text):
     print(gif_url)
     return gif_url
 
+def apologize_for_ise(chat_id, msg_id):
+    BOT.sendMessage(chat_id=chat_id, text=sorry, reply_to_message_id=msg_id)
+    BOT.sendAnimation(chat_id=chat_id, animation=get_gif_url("sorry"))
+
 initialise()
 def handle_request(request):
     initialise()
     update = telegram.Update.de_json(request.get_json(force=True), BOT)
+    if not update or not update.message or not update.message.chat:
+        print("Unable to extract the chat/message details")
+        print("Request body: ", request.get_json(force=True))
+        return
+
     chat_id = update.message.chat.id
     msg_id = update.message.message_id
-    from_user = update.message.from_user.username
     text = update.message.text.encode('utf-8').decode()
+    from_user = update.message.from_user.username
+    if not from_user:
+        from_user = "hooman"
+
     print("got text message :", text)
     print("From user: ", from_user)
     print("chat_id: ", chat_id)
 
     text_ = text.lower()
     if "start" in text_ or "hello" in text_ or "hai" == text_ or "hi" == text_:
-        hello = "Hello {0}, how you doing".format(from_user)
-        welcome = """
-
-Welcome to Bekkam's bot. Type a word & get some nice gifs.
-
-Oh btw, kids get kiddo gifs :p
-        """
-        BOT.sendMessage(chat_id=chat_id, text=hello + welcome, reply_to_message_id=msg_id)
+        BOT.sendMessage(chat_id=chat_id,
+                        text=hello.format(from_user) + welcome,
+                        reply_to_message_id=msg_id)
 
         if 'bhanu' in from_user.lower():
             BOT.sendMessage(chat_id=chat_id, text="You sound like a kid, so sending you a kid gif")
@@ -89,6 +108,6 @@ Oh btw, kids get kiddo gifs :p
             BOT.sendAnimation(chat_id=chat_id, animation=gif_url, reply_to_message_id=msg_id)
         except Exception as ex:
             print(ex)
-            BOT.sendMessage(chat_id=chat_id, text="There was a problem with this message, please send a different one", reply_to_message_id=msg_id)
+            apologize_for_ise(chat_id, msg_id)
 
     return 'ok'
