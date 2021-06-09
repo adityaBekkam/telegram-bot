@@ -1,18 +1,21 @@
 import requests
 import urllib
 import json
+import logging
 
 from messages import hello, welcome, sorry
 from startup import get_bot, get_giphy_key
 
+logger = logging.getLogger(__name__)
+
 def get_gif_url(text):
     GIPHY_URL = "https://api.giphy.com/v1/gifs/translate?api_key={0}&s={1}"
     url = GIPHY_URL.format(get_giphy_key(), urllib.parse.quote(text))
-    print(url)
+    logger.debug(url)
     resp = requests.get(url)
     json_resp = json.loads(resp.content)
     gif_url = json_resp['data']['images']['original']['url']
-    print(gif_url)
+    logger.debug(gif_url)
     return gif_url
 
 def handle_ise(chat_id, msg_id):
@@ -29,9 +32,9 @@ def respond(update):
     if not from_user:
         from_user = "hooman"
 
-    print("got text message :", text)
-    print("From user: ", from_user)
-    print("chat_id: ", chat_id)
+    logger.debug("got text message :", text)
+    logger.debug("From user: ", from_user)
+    logger.debug("chat_id: ", chat_id)
 
     text_ = text.lower()
     if "start" in text_ or "hello" in text_ or "hai" == text_ or "hi" == text_:
@@ -43,7 +46,7 @@ def respond(update):
             gif_url = get_gif_url(text)
             BOT.sendAnimation(chat_id=chat_id, animation=gif_url, reply_to_message_id=msg_id)
         except Exception as ex:
-            print(ex)
+            logger.error(ex)
             handle_ise(chat_id, msg_id)
 
     return 'ok'

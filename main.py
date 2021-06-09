@@ -1,7 +1,15 @@
+import logging
 import telegram
 
 from startup import initialise, get_bot
 from bot import respond
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG
+)
+logger = logging.getLogger(__name__)
 
 initialise()
 def handle_request(request):
@@ -9,8 +17,8 @@ def handle_request(request):
     BOT = get_bot()
     update = telegram.Update.de_json(request.get_json(force=True), BOT)
     if not update or not update.message or not update.message.chat:
-        print("Unable to extract the chat/message details")
-        print("Request body: ", request.get_json(force=True))
+        logger.error("Unable to extract the chat/message details")
+        logger.error("Request body: ", request.get_json(force=True))
         return
 
     return respond(update)

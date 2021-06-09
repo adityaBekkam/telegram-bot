@@ -1,6 +1,9 @@
 import os
 import sys
 import telegram
+import logging
+
+logger = logging.getLogger(__name__)
 
 BOT = None
 TOKEN = None
@@ -24,25 +27,27 @@ def initialise():
     if not TOKEN:
         TOKEN = os.environ.get('TOKEN')
         if not TOKEN:
+            logger.error("Bot token not provided")
             sys.exit()
 
     if not WEBHOOK_URL:
         WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
         if not WEBHOOK_URL:
+            logger.error("Webhook URL not provided")
             sys.exit()
 
     if not GIPHY_API_KEY:
         GIPHY_API_KEY = os.environ.get("GIPHY_API_KEY")
         if not GIPHY_API_KEY:
-            print("Silently moving on")
+            logger.warning("Giphy key not configured. Silently moving on")
 
     if not BOT:
         BOT = telegram.Bot(token=TOKEN)
 
     if BOT.setWebhook(WEBHOOK_URL):
-        print("webhook setup ok")
+        logger.info("webhook setup ok")
     else:
-        print("webhook setup failed")
+        logger.error("webhook setup failed")
         sys.exit()
 
 def get_bot():
